@@ -34,7 +34,7 @@ export const SITE = {
     role: 'offensive security, web & cloud',
     // FOTO DE PERFIL: troca o arquivo em public/images/avatar.svg
     // pela tua foto (mesmo nome), ou poe um avatar.jpg e muda o caminho aqui
-    avatar: '/images/avatar.svg',
+    avatar: '/avatar.svg',
   },
 
   // a linha de interesses no /about (separada por ponto sozinho)
