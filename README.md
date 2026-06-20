@@ -14,7 +14,7 @@ npm run build    # gera o dist/ estatico
 
 **ta tudo explicado no `GUIA.md`** (na raiz) — escrito pra eu ler enquanto edito:
 criar post, frontmatter, imagens (capa e internas), trocar foto de perfil,
-mudar identidade do site, deploy e pegadinhas.
+mudar identidade do site, deploy e outras merdas.
 
 atalhos rapidos:
 - escrever post -> `src/content/posts/*.mdx`
