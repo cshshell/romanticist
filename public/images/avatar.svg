@@ -1,0 +1,14 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="avatar">
+  <defs>
+    <clipPath id="c"><circle cx="100" cy="100" r="100" /></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="200" height="200" fill="#e9e5dc" />
+    <!-- ondinhas saindo de um ponto, tipo gota n agua (koi pond) -->
+    <circle cx="116" cy="84" r="20" fill="none" stroke="#3d7e6f" stroke-width="3" opacity="0.92" />
+    <circle cx="116" cy="84" r="42" fill="none" stroke="#3d7e6f" stroke-width="2.4" opacity="0.55" />
+    <circle cx="116" cy="84" r="68" fill="none" stroke="#3d7e6f" stroke-width="2" opacity="0.32" />
+    <circle cx="116" cy="84" r="96" fill="none" stroke="#3d7e6f" stroke-width="1.6" opacity="0.17" />
+    <circle cx="116" cy="84" r="5.5" fill="#336b5e" />
+  </g>
+</svg>

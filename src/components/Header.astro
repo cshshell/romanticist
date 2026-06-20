@@ -1,0 +1,12 @@
+---
+import { SITE } from '../site.config';
+// header fixo com blur (estilo apple). dominio e about, mais nada.
+// o texto do dominio vem do site.config.ts
+---
+
+<header class="site-header">
+  <nav class="site-nav" aria-label="primary">
+    <a href="/" class="brand">{SITE.domain}</a>
+    <a href="/about" class="nav-link">about</a>
+  </nav>
+</header>

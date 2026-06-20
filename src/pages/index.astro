@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site.config';
+import { formatDate } from '../utils/date';
+
+// ordena do mais novo pro mais antigo. o primeiro vira o destaque grande
+const posts = (await getCollection('posts')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+const [featured, ...rest] = posts;
+---
+
+<Base title={SITE.domain}>
+  <main class="home" id="content">
+    <!-- masthead: abre a pagina com voz. textos no site.config.ts -->
+    <header class="masthead" data-reveal>
+      <h1 class="masthead__mark">{SITE.title}</h1>
+      <p class="masthead__sub">{SITE.tagline}</p>
+    </header>
+
+    {
+      featured && (
+        <article class="featured" data-reveal>
+          <a class="featured__link" href={`/posts/${featured.id}`}>
+            <div class="featured__cover">
+              <img
+                src={featured.data.cover}
+                alt={featured.data.title}
+                width="1400"
+                height="788"
+                loading="eager"
+                fetchpriority="high"
+              />
+            </div>
+            <div class="featured__body">
+              <time class="featured__date" datetime={featured.data.date.toISOString()}>
+                {formatDate(featured.data.date)}
+              </time>
+              <h2 class="featured__title">{featured.data.title}</h2>
+              <p class="featured__desc">{featured.data.description}</p>
+            </div>
+          </a>
+        </article>
+      )
+    }
+
+    {
+      rest.length > 0 && (
+        <div class="feed">
+          {rest.map((post) => (
+            <article class="row" data-reveal>
+              <a class="row__link" href={`/posts/${post.id}`}>
+                <div class="row__media">
+                  <img
+                    src={post.data.cover}
+                    alt={post.data.title}
+                    width="800"
+                    height="500"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div class="row__body">
+                  <time class="row__date" datetime={post.data.date.toISOString()}>
+                    {formatDate(post.data.date)}
+                  </time>
+                  <h3 class="row__title">{post.data.title}</h3>
+                  <p class="row__desc">{post.data.description}</p>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      )
+    }
+  </main>
+</Base>

@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { formatDate } from '../../utils/date';
+import { slugify } from '../../utils/slug';
+import { SITE } from '../../site.config';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const cats = new Map<string, string>(); // slug -> nome original
+
+  for (const p of posts) {
+    cats.set(slugify(p.data.category), p.data.category);
+  }
+
+  return [...cats.entries()].map(([slug, name]) => ({
+    params: { category: slug },
+    props: {
+      name,
+      posts: posts
+        .filter((p) => slugify(p.data.category) === slug)
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+    },
+  }));
+}
+
+const { name, posts } = Astro.props;
+---
+
+<Base title={`${name} — ${SITE.domain}`}>
+  <main class="taglist" id="content">
+    <a href="/tags" class="backlink">← index</a>
+    <h1 class="taglist__title">{name}</h1>
+    <ul class="taglist__list">
+      {
+        posts.map((p) => (
+          <li>
+            <a href={`/posts/${p.id}`}>
+              <span class="taglist__name">{p.data.title}</span>
+              <time class="taglist__date" datetime={p.data.date.toISOString()}>
+                {formatDate(p.data.date)}
+              </time>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Base>

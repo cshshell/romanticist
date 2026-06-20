@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site.config';
+
+const { author, interests, social } = SITE;
+---
+
+<Base title={`about — ${SITE.domain}`}>
+  <main class="about" id="content">
+    <a href="/" class="backlink">← back</a>
+
+    <!-- foto de perfil + identidade. troca a foto/handle/role no site.config.ts -->
+    <div class="about__head" data-reveal>
+      <img class="about__avatar" src={author.avatar} alt={author.handle} width="92" height="92" />
+      <div class="about__id">
+        <p class="about__name">{author.handle}</p>
+        <p class="about__role">{author.role}</p>
+      </div>
+    </div>
+
+    <div class="about__body">
+      <p>
+        I put this blog together for my personal use to improve hacking and pentesting skills. It's
+        a great way to share my thoughts and projects, I was inspired to do so by eversinc33 and
+        oomf, which is one of the main reasons I set this entire thing up. As time goes on, i'll
+        increase the complexity of these articles. I'm really into web exploitation and cloud, plus,
+        it's a nice way to build a solid personal portfolio. If you're looking to learn some hacking,
+        I will introduce this content with the fundamentals, such as HTTP and other basic concepts. I
+        live for complex, challenging stuff, and you're definitely going to see plenty of that around
+        here. Enjoy!
+      </p>
+
+      <p>If you're into cybersecurity, you should check out some things I post here.</p>
+    </div>
+
+    <p class="about__interests">{interests.join(' · ')}</p>
+
+    <ul class="about__links">
+      {
+        social.map((l) => (
+          <li>
+            <span class="about__llabel">{l.label}</span>
+            <span class="about__larrow">→</span>
+            {l.href ? (
+              <a href={l.href} rel="me noopener" target="_blank">
+                {l.value}
+              </a>
+            ) : (
+              <span class="about__lvalue">{l.value}</span>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Base>

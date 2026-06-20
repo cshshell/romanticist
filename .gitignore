@@ -1,0 +1,12 @@
+# deps
+node_modules/
+
+# build
+dist/
+.astro/
+
+# logs e cache
+*.log
+.DS_Store
+.env
+.env.production

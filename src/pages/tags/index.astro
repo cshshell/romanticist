@@ -1,0 +1,60 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { slugify } from '../../utils/slug';
+import { SITE } from '../../site.config';
+
+const posts = await getCollection('posts');
+
+// categorias com contagem (o "filing cabinet" do eversinc)
+const catCounts = new Map<string, number>();
+for (const p of posts) {
+  catCounts.set(p.data.category, (catCounts.get(p.data.category) ?? 0) + 1);
+}
+const categories = [...catCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+// tags com contagem
+const tagCounts = new Map<string, number>();
+for (const p of posts) {
+  for (const t of p.data.tags) {
+    tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+  }
+}
+const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+---
+
+<Base title={`index — ${SITE.domain}`}>
+  <main class="tags" id="content">
+    <a href="/" class="backlink">← back</a>
+
+    <section class="tags__group" data-reveal>
+      <p class="tags__grouplabel">categories</p>
+      <ul class="tags__cats">
+        {
+          categories.map(([cat, n]) => (
+            <li>
+              <a class="tags__cat" href={`/categories/${slugify(cat)}`}>
+                <span class="tags__catname">{cat}</span>
+                <span class="tags__catcount">{n}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="tags__group" data-reveal>
+      <p class="tags__grouplabel">tags</p>
+      <div class="tags__cloud">
+        {
+          tags.map(([tag, n]) => (
+            <a class="tags__item" href={`/tags/${tag}`}>
+              #{tag}
+              <span class="tags__count">{n}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</Base>
