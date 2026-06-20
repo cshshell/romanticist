@@ -23,15 +23,15 @@ export const SITE = {
   title: 'romanticist',
 
   // a linha que vem embaixo do wordmark
-  tagline: 'notes on web exploitation, cloud & offensive research',
+  tagline: 'Cloud and web security student, I like to post some of my progress here',
 
   // descricao padrao (meta tag) quando a pagina nao manda uma propria
-  description: 'Personal security research notebook.',
+  description: 'Personal blog.',
 
   // bloco de identidade do /about
   author: {
-    handle: 'csh',
-    role: 'offensive security · web & cloud',
+    handle: 'zsh',
+    role: 'offensive security, web & cloud',
     // FOTO DE PERFIL: troca o arquivo em public/images/avatar.svg
     // pela tua foto (mesmo nome), ou poe um avatar.jpg e muda o caminho aqui
     avatar: '/images/avatar.svg',
@@ -41,7 +41,7 @@ export const SITE = {
   interests: [
     'web exploitation',
     'cloud security',
-    'identity & federation abuse',
+    'cloud exploitation',
     'appsec',
     'offensive research',
     'lateral movement',
@@ -49,8 +49,8 @@ export const SITE = {
 
   // os links do /about
   social: [
-    { label: 'github', value: 'github.com/csh', href: 'https://github.com/csh' },
-    { label: 'x', value: 'x.com/csh', href: 'https://x.com/csh' },
-    { label: 'discord', value: 'csh', href: null },
+    { label: 'github', value: 'github.com/cshshell', href: 'https://github.com/cshshell' },
+    { label: 'x', value: 'x.com/iblameubuntu', href: 'https://x.com/iblameubuntu' },
+    { label: 'discord', value: 'zshell.mitigation', href: null },
   ] as SocialLink[],
 };

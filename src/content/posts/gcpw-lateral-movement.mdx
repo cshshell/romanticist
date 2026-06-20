@@ -1,10 +1,10 @@
 ---
 # ===== FRONTMATTER — os dados do post (tudo explicado) =====
 title: "Lateral Movement via GCPW — Abusing Cloned VM Credentials"   # titulo que aparece em tudo
-description: "How a cloned VM image turns into a free pass across an entire GCP environment. No fancy exploit, just a credential that nobody rotated."   # resumo de 1 linha (subtitulo)
+description: "How a privileged service account silently created by GCPW becomes a lateral movement vector when VMs get cloned without rotating credentials."   # resumo de 1 linha (subtitulo)
 date: 2026-06-18                # data no formato ANO-MES-DIA. o post de data mais nova vira o DESTAQUE da home
 category: "Cloud Security"      # categoria. vira pagina em /categories/cloud-security
-tags: ["gcpw", "gcp", "lateral-movement", "windows", "lsa"]          # tags. cada uma vira pagina em /tags
+tags: ["gcpw", "gcp", "lateral-movement"]          # tags. cada uma vira pagina em /tags
 cover: "/images/posts/gcpw-lateral-movement/cover.svg"               # capa. troca o arquivo nessa pasta (ou cola uma url https)
 ---
 
@@ -25,4 +25,57 @@ cover: "/images/posts/gcpw-lateral-movement/cover.svg"               # capa. tro
   -> detalhe completo de tudo ta no GUIA.md la na raiz do projeto
 */}
 
-{/* escreve daqui pra baixo */}
+I ve been spending more time on Google's attack surface lately. Most of the public work in this space focuses on GCP itself IAM, metadata service, storage buckets but there's a whole layer of Google enterprise tooling sitting on Windows endpoints that barely gets discussed. GCPW is one of those things, and after reading through G's notes on it I wanted to write my own pass at the technique.
+
+*Built on top of G's original research [coolblog.substack.com](https://coolblog.substack.com/). go check his stuff.*
+
+
+## What GCPW Actually Does
+
+Google Credential Provider for Windows is Google's UEM style solution for Windows fleets. It lets users sign into their machines with their Google Workspace account through SSO, which is convenient and pretty common in orgs heavily invested in Google's ecosystem.
+
+What's not visible from the surface is what happens during install. GCPW creates a local privileged service account called `gaia` — short for Google Accounts and ID Administration. According to Google's own source, the credentials get stored as LSA secrets under two specific keys:
+
+```c
+const wchar_t LsaKeyGaiaUsername[] = L"L$GAIA_USERNAME";
+const wchar_t LsaKeyGaiaPassword[] = L"L$GAIA_PASSWORD";
+```
+
+The password is randomly generated when the provider gets installed. Every GCPW-enabled machine has this account sitting locally with its own stored secret. So far so normal.
+
+## The Cloning Problem
+
+Here's where it falls apart. Enterprise environments lean hard on golden images — build one base VM, configure everything, clone it out across the fleet. Standard practice.
+
+The issue is that when a VM with GCPW installed gets cloned, the `gaia` credentials travel with it. The LSA secret stays exactly as it was on the source image. Nothing in the cloning process triggers a rotation, and the team doing the provisioning usually has no idea this account even exists locally on each box.
+
+Net result: every machine cloned from that same image shares the same `gaia` password.
+
+## Getting the Credentials
+
+If you have execution on any machine in the environment, dump LSA secrets and look for the two keys mentioned earlier:
+
+```c
+Secret  : L$GAIA_USERNAME 
+cur/text: gaia
+Secret  : L$GAIA_PASSWORD
+cur/text: [snip]
+```
+
+If they're there, you have a valid local credential. Now the question is how far it goes.
+
+## The Spread
+
+Since the password is identical across every cloned machine, the same credential works as a local authentication for the `gaia` account on each of them. Try authenticating against other machines in the network using whatever method the environment allows for local accounts — the spread is as wide as the cloning was.
+
+The privileges depend on how the account is configured locally. In some deployments it sits with significant rights by design, since it's representing Google's identity management on the endpoint.
+
+## Why It Slips Through
+
+This isn't a vulnerability in the traditional sense. GCPW behaves exactly as documented. The gap exists because the documentation doesn't connect to the cloning workflow — nobody whose job is to ship VM images is thinking about LSA secrets, and nobody managing GCPW is thinking about how the images are built.
+
+If you're auditing, this takes maybe a minute to check. If you're operating the environment, the fix is straightforward: rotate `L$GAIA_PASSWORD` on each instance post-clone, or better install GCPW as a post-provisioning step instead of baking it into the base image.
+
+---
+
+*inspired by my hb G [coolblog.substack.com](https://coolblog.substack.com/)* 
